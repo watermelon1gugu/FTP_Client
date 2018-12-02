@@ -25,13 +25,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class TransferTask implements Runnable {
 	private List<TransferTaskListener> listeners=new ArrayList<TransferTaskListener>();
 	private BufferedInputStream in;
 	private BufferedOutputStream out;
 	private long size;
-	
+	private Semaphore semaphore;
+
+
+
 	public TransferTask(InputStream in, OutputStream out, long size){
 		this.in=new BufferedInputStream(in);
 		this.out=new BufferedOutputStream(out);
@@ -52,18 +56,20 @@ public class TransferTask implements Runnable {
 			read=this.in.read(buff);
 
 			while(read!=-1 && totalRead<this.size+1){
+				this.semaphore.acquire();
 				totalRead+=read;
 				notifyTransfered(totalRead);
 				this.out.write(buff, 0, read);
 				read=this.in.read(buff);
+				this.semaphore.release();
 			}
 			
 			this.in.close();
 			this.out.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		notifyFinish();
 	}
 
@@ -81,5 +87,9 @@ public class TransferTask implements Runnable {
 	
 	protected void notifyFinish(){
 		for(TransferTaskListener listener : this.listeners) listener.finish();
+	}
+
+	public void setSemaphore(Semaphore semaphore) {
+		this.semaphore = semaphore;
 	}
 }

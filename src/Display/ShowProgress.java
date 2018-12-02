@@ -25,12 +25,14 @@ import FTP.TransferTaskListener;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.concurrent.Semaphore;
 
 public class ShowProgress extends JPanel {
 	private static final long serialVersionUID = -5585045453142379373L;
-
+	private Semaphore semaphore;
 	public ShowProgress(){
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		this.semaphore = new Semaphore(1);
 	}
 	
 	public void addTransferTask(TransferTask task){
@@ -50,10 +52,17 @@ public class ShowProgress extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				flag =  !flag;
 				if (flag){
+					try {
+						semaphore.acquire();
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
 					Button.setText("continue");
+
 					//////////////进程停止////////////
 					////////////////addAction//////////////
 				}else {
+					semaphore.release();
 					Button.setText("stop");
 					//////////////进程开始////////////
 					////////////////addAction//////////////
@@ -86,7 +95,7 @@ public class ShowProgress extends JPanel {
 		listener.bar=bar;
 		listener.Button = Button;
 		task.addListener(listener);
-
+		task.setSemaphore(semaphore);
 
 		////////////////////////////////////////////////////////
 		updateUI();
