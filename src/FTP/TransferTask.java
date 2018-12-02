@@ -32,8 +32,8 @@ public class TransferTask implements Runnable {
 	private BufferedInputStream in;
 	private BufferedOutputStream out;
 	private long size;
-	private Semaphore semaphore;
-
+	private Semaphore semaphore = new Semaphore(1);
+	private Semaphore queueSem;
 
 
 	public TransferTask(InputStream in, OutputStream out, long size){
@@ -48,6 +48,11 @@ public class TransferTask implements Runnable {
 	
 	@Override
 	public void run() {
+		try {
+			queueSem.acquire();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		byte[] buff=new byte[4096];
 		int read;
 		long totalRead=0;
@@ -69,8 +74,9 @@ public class TransferTask implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		notifyFinish();
+		queueSem.release();
+
 	}
 
 	public void addListener(TransferTaskListener listener){
@@ -89,7 +95,11 @@ public class TransferTask implements Runnable {
 		for(TransferTaskListener listener : this.listeners) listener.finish();
 	}
 
-	public void setSemaphore(Semaphore semaphore) {
-		this.semaphore = semaphore;
+	public void setQueueSem(Semaphore sem){
+		this.queueSem = sem;
 	}
+	public Semaphore getSemaphore() {
+		return semaphore;
+	}
+
 }
