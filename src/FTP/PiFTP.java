@@ -18,14 +18,7 @@
 
 package FTP;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -124,8 +117,8 @@ public class PiFTP{
 				str=read.readLine();
 			}
 			
-			read.close();
-			sock.close();
+//			read.close();
+//			sock.close();
 			
 			notifyReceiveMsg(this.in.readLine());
 		} catch (IOException e) {
@@ -146,7 +139,7 @@ public class PiFTP{
 		try {
 			if(command("MLST "+path).startsWith("250-")){
 				String line=this.in.readLine();
-				file=parseLine(line.substring(4, line.length()));
+				file=parseLine(line);
 				file.exist=true;
 				
 				notifyReceiveMsg(line);
@@ -212,6 +205,22 @@ public class PiFTP{
 		
 		return in;
 	}
+
+//	public synchronized InputStream resume(File file) {
+//		InputStream in = null;
+//		if(this.type != Type.I) if(!setMode(Type.I)) return in;
+//		Socket sock = PASV();
+//		if(sock==null) return in;
+//
+//		try {
+//			String log = command("REST "+file.getTotalSpace());
+//			if(log.startsWith())
+//
+//		}
+//		catch(IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	/**
 	 * Allow to upload an file
@@ -276,7 +285,8 @@ public class PiFTP{
 			
 			if(log.startsWith("227")){
 				String[] tab=log.substring(log.indexOf("(")+1, log.indexOf(")")).split(",");
-				String host=tab[0]+"."+tab[1]+"."+tab[2]+"."+tab[3];
+				//String host=tab[0]+"."+tab[1]+"."+tab[2]+"."+tab[3];
+				String host="120.78.64.178";
 				int port=(Integer.parseInt(tab[4])<<8)+Integer.parseInt(tab[5]);
 				
 				sock=new Socket(host, port);

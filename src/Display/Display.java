@@ -86,17 +86,19 @@ public class Display extends JFrame {
 		public void selectedFile(String path) {
 			if(!Display.this.pi.isConnected()) return;
 			File file=new File(path);
+			String currentPath = Display.this.expFTP.getCurrentPath();
 			
 			try {
 				TransferTask trf=new TransferTask(
 						new FileInputStream(file),
-						Display.this.pi.upload(Display.this.expFTP.getCurrentPath()+"/"+file.getName()),
+						Display.this.pi.upload(currentPath+"/"+file.getName()),
 						file.length());
 				
 				Display.this.progress.addTransferTask(trf);
 				
 				Thread th=new Thread(trf);
 				th.start();
+				//expFTP.setPath(currentPath);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -111,7 +113,8 @@ public class Display extends JFrame {
 			
 			FTPFile fileR=Display.this.pi.getFile(path);
 			if(fileR==null) return;
-			File fileL=new File(Display.this.expLocal.getCurrentPath()+ Constants.FILE_SEPARATOR +fileR.getName());
+			String currentPath = Display.this.expLocal.getCurrentPath();
+			File fileL=new File(currentPath+ Constants.FILE_SEPARATOR +fileR.getName());
 			
 			try {
 				TransferTask trf=new TransferTask(
@@ -123,6 +126,7 @@ public class Display extends JFrame {
 				
 				Thread th=new Thread(trf);
 				th.start();
+				expLocal.setPath(currentPath);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
@@ -154,15 +158,16 @@ public class Display extends JFrame {
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-			} finally {
-				if (read != null) {
-					try {
-						read.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
 			}
+//			finally {
+//				if (read != null) {
+//					try {
+//						read.close();
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
 			
 		}
 

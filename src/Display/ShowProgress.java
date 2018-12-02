@@ -18,12 +18,13 @@
 
 package Display;
 
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
+import javax.swing.*;
 
 import FTP.TransferTask;
 import FTP.TransferTaskListener;
+
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class ShowProgress extends JPanel {
 	private static final long serialVersionUID = -5585045453142379373L;
@@ -34,19 +35,66 @@ public class ShowProgress extends JPanel {
 	
 	public void addTransferTask(TransferTask task){
 		JProgressBar bar=new JProgressBar();
+		//////////////////////////change///////////////////////
+		JButton Button=new JButton("Stop");
 		bar.setMaximum((int) task.getSize());
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		add(bar);
-		
+		add(Button);
+
+
+
+		Button.addMouseListener(new MouseListener() {
+			boolean flag = false;
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				flag =  !flag;
+				if (flag){
+					Button.setText("continue");
+					//////////////进程停止////////////
+					////////////////addAction//////////////
+				}else {
+					Button.setText("stop");
+					//////////////进程开始////////////
+					////////////////addAction//////////////
+				}
+
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+
+			}
+		});
+
 		ListenTask listener=new ListenTask();
 		listener.bar=bar;
+		listener.Button = Button;
 		task.addListener(listener);
-		
+
+
+		////////////////////////////////////////////////////////
 		updateUI();
 	}
 	
 	private class ListenTask implements TransferTaskListener{
 		public JProgressBar bar;
-		
+		JButton Button;
 		@Override
 		public void transfered(long transfered) {
 			this.bar.setValue((int) transfered);
@@ -56,6 +104,7 @@ public class ShowProgress extends JPanel {
 		@Override
 		public void finish() {
 			ShowProgress.this.remove(this.bar);
+			ShowProgress.this.remove(this.Button);
 			this.bar=null;
 			ShowProgress.this.updateUI();
 			

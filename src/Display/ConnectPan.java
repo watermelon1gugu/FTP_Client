@@ -140,7 +140,8 @@ public class ConnectPan extends JPanel{
 						ConnectPan.this.host.getText(),
 						(Long) ConnectPan.this.port.getValue());
 			}
-			else ConnectPan.this.notifyDisconnect();
+			else
+				ConnectPan.this.notifyDisconnect();
 		}
 
 		@Override

@@ -12,8 +12,13 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		System.out.println("Hello world !");
-		
 		try {
+			org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
+		}catch (Exception e){
+			return;
+		}
+		try {
+
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
 			e.printStackTrace();

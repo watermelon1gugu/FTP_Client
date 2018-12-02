@@ -46,7 +46,7 @@ public class Language {
 		case "fr":
 			return langFr[phrase];
 		default:
-			return "unspecified";
+			return langEn[phrase];
 		}
 
 	}

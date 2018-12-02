@@ -38,6 +38,7 @@ public class FileExplorerFTP extends FileExplorer {
 		if(this.pi==null) return;
 		
 		List<FTPFile> files=this.pi.getFiles(path);
+		if(!this.path.isEmpty() && !this.path.equals("/")) model.addElement("..");
 		for(FTPFile file : files){
 			this.model.addElement(file.getName());
 		}
@@ -58,6 +59,7 @@ public class FileExplorerFTP extends FileExplorer {
 	protected void selected(int index) {
 		String path=this.path + Constants.FILE_SEPARATOR + this.model.get(index);
 		FTPFile file=this.pi.getFile(path);
+
 		
 		if(file.isDirectory()){
 			setPath(file.getAbsPath());
